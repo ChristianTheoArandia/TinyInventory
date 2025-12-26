@@ -1,4 +1,8 @@
 const list = document.getElementById("list");
+const searchInput = document.getElementById("search");
+const lowStockFilter = document.getElementById("lowStockFilter");
+
+let itemsCache = [];
 
 async function loadItems() {
   try {
@@ -6,30 +10,64 @@ async function loadItems() {
     if (!res.ok) throw new Error("Failed to load items");
     const items = await res.json();
 
-    list.innerHTML = "";
-    items.forEach(item => {
-      const li = document.createElement("li");
-      li.innerHTML = `
-        ${item.name} - <strong>${item.quantity}</strong>
-        ${item.quantity < 5 ? "⚠ LOW STOCK" : ""}
-        <button onclick="changeQty('${item._id}', 1)">➕</button>
-        <button onclick="changeQty('${item._id}', -1)">➖</button>
-        <button onclick="deleteItem('${item._id}')">❌</button>
-        <button onclick="updateItem('${item._id}')">✏️</button>
-      `;
-      list.appendChild(li);
-    });
+    itemsCache = items;
+    renderList();
   } catch (err) {
     console.error(err);
     alert("Error loading items. Please try again.");
   }
 }
 
+function renderList() {
+  const searchTerm = searchInput ? searchInput.value.toLowerCase() : '';
+  const filterLowStock = lowStockFilter ? lowStockFilter.checked : false;
+
+  list.innerHTML = "";
+  
+  let filteredItems = itemsCache;
+  
+  if (searchTerm) {
+    filteredItems = filteredItems.filter(item => 
+      item.name.toLowerCase().includes(searchTerm)
+    );
+  }
+  
+  if (filterLowStock) {
+    filteredItems = filteredItems.filter(item => item.quantity < 30);
+  }
+
+  if (filteredItems.length === 0) {
+    const li = document.createElement("li");
+    li.className = "no-results";
+    li.textContent = searchTerm || filterLowStock 
+      ? "No items match your search/filter" 
+      : "No items in inventory. Add your first item above!";
+    list.appendChild(li);
+    return;
+  }
+
+  filteredItems.forEach(item => {
+    const li = document.createElement("li");
+    li.innerHTML = `
+      <span class="${item.quantity < 30 ? 'low-stock' : ''}">
+        ${item.name} - <strong>${item.quantity}</strong>
+        ${item.quantity < 5 ? "⚠ LOW STOCK" : ""}
+      </span>
+      <div class="item-actions">
+        <button onclick="changeQty('${item._id}', 1)">➕</button>
+        <button onclick="changeQty('${item._id}', -1)">➖</button>
+        <button onclick="updateItem('${item._id}')">✏️</button>
+        <button onclick="deleteItem('${item._id}')">❌</button>
+      </div>
+    `;
+    list.appendChild(li);
+  });
+}
+
 async function addItem() {
   const name = document.getElementById("name").value.trim();
   const quantity = parseInt(document.getElementById("quantity").value);
 
-  // Validation
   if (!name) {
     return alert("Item name cannot be empty");
   }
@@ -45,6 +83,7 @@ async function addItem() {
     });
 
     if (!res.ok) throw new Error("Failed to add item");
+    
     document.getElementById("name").value = "";
     document.getElementById("quantity").value = "";
     loadItems();
@@ -66,7 +105,7 @@ async function changeQty(id, amount) {
     const newQty = item.quantity + amount;
     if (newQty < 0) return alert("Quantity cannot be negative");
 
-    const updateRes = await fetch(`/api/items/${id}`, {
+    const updateRes = await fetch(/api/items/${id}, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ quantity: newQty })
@@ -89,15 +128,15 @@ async function updateItem(id) {
     const item = items.find(i => i._id === id);
     if (!item) return alert("Item not found");
 
-    let newQty = prompt("Please enter updated quantity:", item.quantity);
-    if (newQty === null) return; // user canceled
+    let newQty = prompt(Update quantity for "${item.name}":, item.quantity);
+    if (newQty === null) return;
     newQty = parseInt(newQty);
 
     if (isNaN(newQty) || newQty < 0) {
       return alert("Quantity must be a non-negative number");
     }
 
-    const updateRes = await fetch(`/api/items/${id}`, {
+    const updateRes = await fetch(/api/items/${id}, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ quantity: newQty })
@@ -112,14 +151,26 @@ async function updateItem(id) {
 }
 
 async function deleteItem(id) {
+  if (!confirm("Are you sure you want to delete this item?")) {
+    return;
+  }
+  
   try {
-    const res = await fetch(`/api/items/${id}`, { method: "DELETE" });
+    const res = await fetch(/api/items/${id}, { method: "DELETE" });
     if (!res.ok) throw new Error("Failed to delete item");
     loadItems();
   } catch (err) {
     console.error(err);
     alert("Error deleting item. Please try again.");
   }
+}
+
+if (searchInput) {
+  searchInput.addEventListener("input", renderList);
+}
+
+if (lowStockFilter) {
+  lowStockFilter.addEventListener("change", renderList);
 }
 
 loadItems();

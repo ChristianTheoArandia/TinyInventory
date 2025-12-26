@@ -1,4 +1,4 @@
-* {
+{
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -243,4 +243,74 @@ ul:empty::before {
   h1 {
     font-size: 1.6rem;
   }
+}
+
+.search-filter-container {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    margin-bottom: 25px;
+    padding: 20px;
+    background: #f8fbff;
+    border-radius: 12px;
+    border: 1px solid #dbeafe;
+}
+
+.search-input {
+    flex: 1;
+    padding: 14px 20px;
+    border: 2px solid #dbeafe;
+    border-radius: 8px;
+    font-size: 1rem;
+    background: white;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.filter-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    color: #1e3a8a;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+#lowStockFilter {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    accent-color: #3b82f6;
+}
+
+.filter-text {
+    font-size: 0.95rem;
+}
+
+li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 22px;
+}
+
+.item-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.no-results {
+    text-align: center;
+    color: #64748b;
+    font-style: italic;
+    padding: 40px;
+    background: #f8fafc;
+    border-radius: 10px;
+    border: 2px dashed #cbd5e0;
+    margin: 20px 0;
 }

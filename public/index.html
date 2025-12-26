@@ -1,28 +1,39 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Tiny Inventory</title>
-  <link rel="stylesheet" href="style.css">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tiny Inventory</title>
+    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
-  <div class="container">
-    <h1>📦 Tiny Inventory</h1>
-    
-    <div class="form-container">
-      <div class="form-group">
-        <input id="name" placeholder="Item name">
-        <input id="quantity" type="number" placeholder="Quantity" min="0">
-        <button onclick="addItem()">Add Item</button>
-      </div>
+    <div class="container">
+        <h1>📦 Tiny Inventory</h1>
+        
+        <!-- SEARCH AND FILTER SECTION -->
+        <div class="search-filter-container">
+            <input type="text" id="search" placeholder="🔍 Search item name..." class="search-input">
+            <label class="filter-checkbox">
+                <input type="checkbox" id="lowStockFilter">
+                <span class="filter-text">⚠ Show Low Stock Only (<30)</span>
+            </label>
+        </div>
+        
+        <!-- ADD ITEM FORM -->
+        <div class="form-container">
+            <div class="form-group">
+                <input id="name" placeholder="Item name" class="form-input">
+                <input id="quantity" type="number" placeholder="Quantity" min="0" class="form-input">
+                <button onclick="addItem()" class="btn btn-primary">➕ Add Item</button>
+            </div>
+        </div>
+        
+        <!-- INVENTORY LIST -->
+        <div class="inventory-list">
+            <h2>📋 Inventory Items</h2>
+            <ul id="list"></ul>
+        </div>
     </div>
-    
-    <div class="inventory-list">
-      <h2>Inventory Items</h2>
-      <ul id="list"></ul>
-    </div>
-  </div>
 
-  <script src="script.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
